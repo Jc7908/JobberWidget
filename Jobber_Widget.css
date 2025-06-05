@@ -1,0 +1,261 @@
+/* widget-styles.css */
+
+/* Montserrat font */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap");
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Slide-down animation for circle icons */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container for the five round icons */
+.circle-icons {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  z-index: 1000;
+}
+.circle-icon {
+  width: 50px;
+  height: 50px;
+  background-color: #1ea85b; /* Global green */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  position: relative;
+  opacity: 0;
+  animation: slideDown 0.6s ease forwards;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+/* On hover, pop toward the user */
+.circle-icon:hover {
+  transform: translateY(-5px) scale(1.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+  z-index: 1002;
+}
+.circle-icon .label {
+  position: absolute;
+  right: 60px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.circle-icon:hover .label {
+  opacity: 1;
+  transform: translateX(0);
+}
+/* Inline SVG icons sized 24×24 */
+.circle-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}
+/* External image icons sized 24×24 */
+.circle-icon img {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+/* Staggered delays (1→5) */
+.circle-icons .circle-icon:nth-child(1) { animation-delay: 0.3s; }
+.circle-icons .circle-icon:nth-child(2) { animation-delay: 0.5s; }
+.circle-icons .circle-icon:nth-child(3) { animation-delay: 0.7s; }
+.circle-icons .circle-icon:nth-child(4) { animation-delay: 0.9s; }
+.circle-icons .circle-icon:nth-child(5) { animation-delay: 1.2s; }
+
+/* “Let’s Talk” trigger (bottom right) */
+.lets-talk-wrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+#lets-talk-trigger {
+  background-color: white;
+  color: #1ea85b;
+  border: 2px solid #1ea85b;
+  border-radius: 8px;
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s, color 0.3s;
+  width: 200px;
+  text-align: center;
+}
+#lets-talk-trigger:hover {
+  background-color: #1ea85b;
+  color: white;
+}
+
+/* Pop-over panel */
+#lets-talk-panel {
+  display: none;
+  position: absolute;
+  bottom: 80px; /* sit above “Let’s Talk” button */
+  right: 0;
+  width: 340px;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  animation: fadeInUp 0.4s ease forwards;
+  text-align: center;
+  z-index: 1000;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.close-panel {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 22px;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.close-panel:hover {
+  color: #444;
+}
+#lets-talk-panel h3 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000;
+}
+#lets-talk-panel p {
+  font-size: 14px;
+  font-weight: 400;
+  color: #555;
+  margin: 0 0 20px;
+  padding: 0 10px;
+}
+.btn-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+#lets-talk-panel .schedule-btn {
+  background-color: #1ea85b;
+  color: white;
+  border: none;
+  flex: 1;
+  padding: 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s;
+  text-align: center;
+}
+#lets-talk-panel .schedule-btn:hover {
+  background-color: #17974f;
+}
+/* Menu container & dropdown */
+#menu-container {
+  position: relative;
+}
+#menu-options {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  background: rgba(51, 51, 51, 0.85);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+}
+.menu-item {
+  padding: 12px 16px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.menu-item:hover {
+  background-color: #444;
+}
+
+/* Jobber modal (embedded form) */
+#jobber-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+  overflow: auto;
+}
+.modal-content {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  width: 90%;
+  max-width: 700px;
+  border-radius: 10px;
+  font-family: 'Montserrat', sans-serif;
+  z-index: 10001;
+  overflow-y: auto;
+  max-height: 90vh;
+}
+.close-modal {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+  font-size: 26px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.3s;
+  z-index: 10003;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+}
+.close-modal:hover {
+  color: #444;
+}
