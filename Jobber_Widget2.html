@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Jobber Widget – Standalone</title>
+  <title>Jobber Widget – Final</title>
 
-  <!-- Montserrat font -->
+  <!-- Montserrat from Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -13,12 +13,451 @@
     rel="stylesheet"
   />
 
-  <!-- Link to widget.css -->
-  <link rel="stylesheet" href="widget.css" />
+  <!-- Jobber’s CSS (for the embedded form) -->
+  <link
+    rel="stylesheet"
+    href="https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css"
+  />
+
+  <style>
+    /* ================================= */
+    /* Global Styles – Montserrat Font    */
+    /* ================================= */
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* ============================== */
+    /* Circle Icon Buttons – Upper Right */
+    /* ============================== */
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .circle-icons {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      z-index: 1000;
+    }
+    .circle-icon {
+      width: 50px;
+      height: 50px;
+      background-color: #1ea85b;   /* Global green (#1ea85b) */
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.3s ease;
+      opacity: 0;
+      animation: slideDown 0.6s ease forwards;
+    }
+    .circle-icon:hover {
+      transform: translateY(-5px) scale(1.3);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+      z-index: 1002;
+    }
+    .circle-icon .label {
+      position: absolute;
+      right: 60px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateX(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    .circle-icon:hover .label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    /* Inline SVG icons sized 24×24 */
+    .circle-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+    /* External image icons sized 24×24 */
+    .circle-icon img {
+      display: block;
+      width: 24px;
+      height: 24px;
+    }
+    /* Animation delays for circle icons */
+    .circle-icons .circle-icon:nth-child(1) {
+      animation-delay: 0.3s;
+    }
+    .circle-icons .circle-icon:nth-child(2) {
+      animation-delay: 0.5s;
+    }
+    .circle-icons .circle-icon:nth-child(3) {
+      animation-delay: 0.7s;
+    }
+    .circle-icons .circle-icon:nth-child(4) {
+      animation-delay: 0.9s;
+    }
+    .circle-icons .circle-icon:nth-child(5) {
+      animation-delay: 1.2s;
+    }
+
+    /* ============================== */
+    /* “Let’s Talk” Button – Bottom Right */
+    /* ============================== */
+    .lets-talk-wrapper {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    #lets-talk-trigger {
+      background-color: white;
+      color: #1ea85b;
+      border: 2px solid #1ea85b;
+      border-radius: 8px;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: background 0.3s, color 0.3s;
+      width: 200px;
+      text-align: center;
+    }
+    #lets-talk-trigger:hover {
+      background-color: #1ea85b;
+      color: white;
+    }
+
+    /* ============================== */
+    /* “Let’s Talk” Panel – Popup      */
+    /* ============================== */
+    #lets-talk-panel {
+      display: none;
+      position: absolute;
+      bottom: 80px; /* Ensures popup sits above the trigger */
+      right: 0;
+      width: 340px;
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      animation: fadeInUp 0.4s ease forwards;
+
+      /* Center content vertically */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Close “×” */
+    .close-panel {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 22px;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .close-panel:hover {
+      color: #444;
+    }
+
+    /* Heading and paragraph */
+    #lets-talk-panel h3 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      font-weight: 700;  /* Montserrat 700 */
+      color: #000;
+    }
+    #lets-talk-panel p {
+      font-size: 14px;
+      font-weight: 400;
+      color: #555;
+      margin: 0 0 20px;
+      padding: 0 10px;
+    }
+
+    /* Button row: Schedule Now + Menu icon */
+    .btn-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    #lets-talk-panel .schedule-btn {
+      background-color: #1ea85b;
+      color: white;
+      border: none;
+      flex: 1;                /* Button stretches */
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+      text-align: center;
+    }
+    #lets-talk-panel .schedule-btn:hover {
+      background-color: #17974f;
+    }
+    #lets-talk-panel .menu-btn {
+      width: 48px;
+      height: 48px;
+      background: white;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #555;
+      cursor: pointer;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    #lets-talk-panel .menu-btn:hover {
+      background: #f0f0f0;
+      border-color: #aaa;
+    }
+
+    /* Menu item hover effect */
+    .menu-item:hover {
+      background-color: #444;
+    }
+
+    /* ============================== */
+    /* Jobber Modal (Embedded Form)   */
+    /* ============================== */
+    #jobber-modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 2000;
+      overflow: auto;
+    }
+    .modal-content {
+      position: relative;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      width: 90%;
+      max-width: 700px;
+      border-radius: 10px;
+      font-family: 'Montserrat', sans-serif;
+      z-index: 10001;
+      overflow-y: auto;
+      max-height: 90vh;
+    }
+    .close-modal {
+      position: absolute;
+      top: 10px;
+      right: 30px;
+      font-size: 26px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.3s;
+      z-index: 10003;
+      background: rgba(255,255,255,0.8);
+      border-radius: 50%;
+    }
+    .close-modal:hover {
+      color: #444;
+    }
+  </style>
 </head>
 
 <body>
-  <!-- widget.js will build all circles, panels, modal, and load Jobber snippet -->
-  <script src="widget.js" defer></script>
+  <!-- ========================== -->
+  <!-- Circle Icon Buttons (Upper Right) -->
+  <!-- ========================== -->
+  <div class="circle-icons">
+    <!-- Phone icon -->
+    <div class="circle-icon" onclick="callNow()">
+      <svg viewBox="0 0 24 24">
+        <path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.27 
+                 11.36 11.36 0 003.55.57 1 1 0 011 1v3.44a1 1 0 01-1 1A17.09 
+                 17.09 0 013 5a1 1 0 011-1h3.44a1 1 0 011 1 11.36 11.36 0 
+                 00.57 3.55 1 1 0 01-.27 1.11l-2.12 2.13z"/>
+      </svg>
+      <span class="label">Call Now</span>
+    </div>
+
+    <!-- Smartphone icon -->
+    <div class="circle-icon" onclick="callBack()">
+      <svg viewBox="0 0 24 24">
+        <path d="M17 1H7a2 2 0 00-2 2v18a2 2 0 002 2h10a2 2 0 002-2V3a2 
+                 2 0 00-2-2zm-5 22a1 1 0 110-2 1 1 0 010 2zm5-4H7V3h10v16z"/>
+      </svg>
+      <span class="label">Call Me Back</span>
+    </div>
+
+    <!-- Gear icon (external file) for Schedule Now -->
+    <div class="circle-icon" onclick="openJobberModal()">
+      <img
+        src="https://raw.githubusercontent.com/Jc7908/Jobberwidget/main/7e8238537f889d8cd04cdfd5560b3f48-Picsart-BackgroundRemover.jpg"
+        alt="Schedule Now"
+        width="24"
+        height="24"
+      />
+      <span class="label">Schedule Now</span>
+    </div>
+
+    <!-- Envelope icon -->
+    <div class="circle-icon" onclick="emailUs()">
+      <svg viewBox="0 0 24 24">
+        <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 
+                 2 0 002-2V6a2 2 0 00-2-2zm0 2v.01L12 13 4 6.01V6h16zm0 
+                 12H4V8l8 5 8-5v8z"/>
+      </svg>
+      <span class="label">Email Us</span>
+    </div>
+
+    <!-- File icon -->
+    <div class="circle-icon" onclick="sendFile()">
+      <svg viewBox="0 0 24 24">
+        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 
+                 2 0 002-2V8l-6-6zM6 20V4h8v5h5v11H6z"/>
+      </svg>
+      <span class="label">Send File</span>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- “Let’s Talk” Widget (Bottom Right) -->
+  <!-- ========================== -->
+  <div class="lets-talk-wrapper">
+    <button id="lets-talk-trigger" onclick="toggleLetsTalkPanel()">
+      Let's Talk
+    </button>
+    <div id="lets-talk-panel">
+      <span class="close-panel" onclick="toggleLetsTalkPanel()">&times;</span>
+
+      <h3>Let's Talk!</h3>
+      <p>
+        Thanks for stopping by! We're here to help,
+        please don't hesitate to reach out.
+      </p>
+
+      <div class="btn-row">
+        <button class="schedule-btn" onclick="openJobberModal()">
+          Schedule Now
+        </button>
+        <div id="menu-container" onmouseenter="showMenu()" onmouseleave="hideMenu()" style="position: relative;">
+          <!-- Dropdown menu options -->
+          <div id="menu-options" style="display: none; position: absolute; bottom: 100%; right: 0; background: rgba(51, 51, 51, 0.85); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 1001;">
+            <div class="menu-item" onclick="callNow()" style="padding: 12px 16px; color: #fff; cursor: pointer;">Call Now</div>
+            <div class="menu-item" onclick="callBack()" style="padding: 12px 16px; color: #fff; cursor: pointer;">Call Me Back</div>
+            <div class="menu-item" onclick="openJobberModal()" style="padding: 12px 16px; color: #fff; cursor: pointer;">Schedule Now</div>
+            <div class="menu-item" onclick="emailUs()" style="padding: 12px 16px; color: #fff; cursor: pointer;">Email Us</div>
+            <div class="menu-item" onclick="sendFile()" style="padding: 12px 16px; color: #fff; cursor: pointer;">Send File</div>
+          </div>
+          <div class="menu-btn">&#9776;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================== -->
+  <!-- Jobber Modal (Embedded Form) -->
+  <!-- ========================== -->
+  <div id="jobber-modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeJobberModal()">&times;</span>
+      <div id="3d4da358-9dda-4aca-ac1b-824a5b9f4694"></div>
+    </div>
+  </div>
+
+  <script
+    src="https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js"
+    clienthub_id="3d4da358-9dda-4aca-ac1b-824a5b9f4694"
+    form_url="https://clienthub.getjobber.com/client_hubs/3d4da358-9dda-4aca-ac1b-824a5b9f4694/public/work_request/embedded_work_request_form"
+  ></script>
+
+  <script>
+    // Toggle the “Let's Talk” panel
+    function toggleLetsTalkPanel() {
+      const panel = document.getElementById('lets-talk-panel');
+      const menu = document.getElementById('menu-options');
+      if (panel.style.display === 'block') {
+        panel.style.display = 'none';
+        menu.style.display = 'none';
+      } else {
+        panel.style.display = 'block';
+        menu.style.display = 'none';
+      }
+    }
+
+    function showMenu() {
+      document.getElementById('menu-options').style.display = 'block';
+    }
+    function hideMenu() {
+      document.getElementById('menu-options').style.display = 'none';
+    }
+
+    // Open Jobber scheduling modal
+    function openJobberModal() {
+      document.getElementById('jobber-modal').style.display = 'block';
+      document.getElementById('lets-talk-panel').style.display = 'none';
+    }
+    function closeJobberModal() {
+      document.getElementById('jobber-modal').style.display = 'none';
+    }
+
+    // Placeholder functions for circle icon clicks
+    function callNow() {
+      window.location.href = 'tel:+19137067071';
+    }
+    function callBack() {
+      window.location.href = 'tel:+19137067071';
+    }
+    function emailUs() {
+      window.location.href = 'mailto:advisor@prohomeexteriorskc.com';
+    }
+    function sendFile() {
+      openJobberModal();
+    }
+  </script>
 </body>
 </html>
